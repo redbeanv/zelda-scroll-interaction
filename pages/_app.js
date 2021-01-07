@@ -1,14 +1,14 @@
 import React from 'react';
 import Head from 'next/head';
+import '../public/css/global.css'
 
-const Zelda = ({Component}) => {
+const Zelda = ({Component, pageProps}) => {
   return (
     <>
       <Head>
         <title>Zelda Introduction</title>
-        <link rel={'stylesheet'} href={'css/style.css'}></link>
       </Head>
-      <Component/>
+      <Component {...pageProps} />
     </>
   );
 };
