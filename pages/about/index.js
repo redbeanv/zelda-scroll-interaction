@@ -2,14 +2,12 @@ import React from 'react';
 import Link from 'next/link';
 import AppLayout from '../../components/AppLayout';
 import Head from 'next';
+import Header from '../../components/header/header';
 
 const About = () => (
   <AppLayout>
+    <Header />
     <h1>소개페이지</h1>
-    {/* className 추가시 <Link>가 아닌 <a>링크에 해야함 */}
-    <Link href='/'>
-      <a>뒤로가기</a>
-    </Link>
   </AppLayout>
 );
 
