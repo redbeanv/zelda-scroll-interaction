@@ -57,3 +57,19 @@ table {
 a {
     text-decoration: none;
 }
+img {
+    max-width: 100%;
+}
+
+
+@media (min-width: 768px) {
+    html {
+        font-size: 20px;
+    }
+}
+
+@media (min-width: 1200px) {
+    html {
+        font-size: 34px;
+    }
+}
