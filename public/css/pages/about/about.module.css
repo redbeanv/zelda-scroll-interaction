@@ -1,10 +1,27 @@
 .about {
   display: flex;
-  height: 100vh;
+  padding: 6rem 0 3rem;
 }
 
 .list {
   display: flex;
   justify-content: space-evenly;
+  flex-direction: column;
   width: 100%;
+}
+
+@media (min-width: 768px) {
+  .about {
+    height: 100vh;
+  }
+
+  .list {
+    flex-direction: row;
+  }
+}
+
+@media (min-width: 1200px) {
+  .about {
+    padding: 0;
+  }
 }
