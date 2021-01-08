@@ -51,6 +51,7 @@
     flex-direction: column;
     justify-content: center;
     position: static;
+    float: left;
     height: 100vh;
     width: 33.3333%;
     background: linear-gradient(0deg, rgba(0, 164, 220, 1) 0%, rgba(1, 87, 116, 1) 100%);
