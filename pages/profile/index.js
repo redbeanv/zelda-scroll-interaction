@@ -1,11 +1,9 @@
 import React from 'react';
-import AppLayout from '../../components/AppLayout';
-import Header from '../../components/header/header';
-import Profile from '../../components/profile/profile';
-import styles from './about.module.css';
+import AppLayout from '../../components/appLayout';
+import Profile from '../../components/profile';
+import styles from '../../public/css/pages/about/about.module.css';
 
 const About = () => {
-  const isAbout = true;
   const profiles = [
     {
       name: 'kimhb',
@@ -33,11 +31,11 @@ const About = () => {
         }
       ]
     },
-  ]
+  ];
+
   return (
     <AppLayout>
       <div className={styles.about}>
-        <Header isAbout={isAbout} />
         <ul className={styles.list}>
         {profiles.map((profile, index) => (
           <Profile key={index} profile={profile} />

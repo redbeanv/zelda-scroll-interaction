@@ -1,7 +1,7 @@
 import React from 'react';
-import AppLayout from '../components/AppLayout';
-import Gallery from '../components/gallery/gallery';
-import styles from './index.module.css';
+import AppLayout from '../components/appLayout';
+import Gallery from '../components/gallery';
+import styles from '../public/css/pages/index.module.css';
 
 const Main = () => (
   <AppLayout>
