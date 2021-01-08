@@ -1,0 +1,46 @@
+{
+  "profiles": [
+    {
+      "name": "kimhb",
+      "message": "developer",
+      "img": "/images/hinox.jpg",
+      "sns": [
+        {
+          "name": "github",
+          "url": "https://github.com/redbeanv/zelda-scroll-interaction"
+        },
+        {
+          "name": "facebook",
+          "url": "https://github.com/redbeanv/zelda-scroll-interaction"
+        },
+        {
+          "name": "instagram",
+          "url": "https://github.com/redbeanv/zelda-scroll-interaction"
+        },
+        {
+          "name": "pinterest",
+          "url": "https://github.com/redbeanv/zelda-scroll-interaction"
+        },
+        {
+          "name": "slack",
+          "url": "https://github.com/redbeanv/zelda-scroll-interaction"
+        },
+        {
+          "name": "twitter",
+          "url": "https://github.com/redbeanv/zelda-scroll-interaction"
+        }
+      ]
+    },
+    {
+      "name": "wonij",
+      "message": "publisher",
+      "img": "/images/guardian.jpg",
+      "sns": [
+        {
+          "name": "github",
+          "url": "https://github.com/owopqowo/zelda-scroll-interaction"
+        }
+      ]
+    }
+  ]
+}

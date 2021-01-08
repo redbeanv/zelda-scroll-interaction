@@ -5,5 +5,6 @@
 
 .list {
   display: flex;
-  width: 66.6666%;
+  justify-content: space-evenly;
+  width: 100%;
 }

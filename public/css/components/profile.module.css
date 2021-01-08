@@ -1,5 +1,4 @@
 .item {
-  flex: 1 0 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,4 +8,81 @@
 .info {
   padding: 1em 0;
   text-align: center;
+}
+
+.name {
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.message {
+  margin-top: 0.5em;
+  font-size: 0.7rem;
+  opacity: 0.6;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  padding-top: 1rem;
+  text-align: center;
+}
+
+.buttons::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 280px;
+  height: 1px;
+  margin-left: -140px;
+  background: #ddd;
+}
+
+.sns {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0 0.4rem;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.sns[data-sns='facebook'] {
+  background-image: url(/images/icon/blue-facebook.png);
+  background-size: auto 100%;
+}
+
+.sns[data-sns='github'] {
+  background-image: url(/images/icon/blue-github.png);
+  background-size: 100%;
+}
+
+.sns[data-sns='instagram'] {
+  background-image: url(/images/icon/blue-instagram.png);
+  background-size: 100%;
+}
+
+.sns[data-sns='pinterest'] {
+  background-image: url(/images/icon/blue-pinterest.png);
+  background-size: auto 100%;
+}
+
+.sns[data-sns='slack'] {
+  background-image: url(/images/icon/blue-slack.png);
+  background-size: 100%;
+}
+
+.sns[data-sns='twitter'] {
+  background-image: url(/images/icon/blue-twitter.png);
+  background-size: 100%;
+}
+
+@media (min-width: 1200px) {
+  .sns {
+    width: 35px;
+    height: 35px;
+  }
 }

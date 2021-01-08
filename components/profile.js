@@ -11,7 +11,9 @@ const Profile = ({profile}) => {
       </dl>
       <div className={styles.buttons}>
         {profile.sns.map((sns, index) => (
-          <a key={index} href={sns.url} data-sns={sns.name} className={styles.sns}>{sns.name}</a>
+          <a key={index} href={sns.url} target="_blank" rel="noopener noreferrer" data-sns={sns.name} className={styles.sns}>
+            <span className="blind">{sns.name}</span>
+          </a>
         ))}
       </div>
     </li>
