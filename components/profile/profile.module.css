@@ -1,0 +1,12 @@
+.item {
+  flex: 1 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.info {
+  padding: 1em 0;
+  text-align: center;
+}
