@@ -5,6 +5,10 @@
   justify-content: center;
 }
 
+.item:not(:first-child) {
+  margin-top: 3rem;
+}
+
 .info {
   padding: 1em 0;
   text-align: center;
@@ -78,6 +82,12 @@
 .sns[data-sns='twitter'] {
   background-image: url(/images/icon/blue-twitter.png);
   background-size: 100%;
+}
+
+@media (min-width: 768px) {
+  .item:not(:first-child) {
+    margin-top: 0;
+  }
 }
 
 @media (min-width: 1200px) {
