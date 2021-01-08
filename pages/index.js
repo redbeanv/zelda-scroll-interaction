@@ -1,14 +1,12 @@
 import React from 'react';
 import AppLayout from '../components/AppLayout';
 import Gallery from '../components/gallery/gallery';
-import Header from '../components/header/header';
 import styles from './index.module.css';
 
 const Main = () => (
   <AppLayout>
-    <Header />
     <section className={styles.section1}>
-      <h2 className={styles.title}>The Lehgend of &nbsp;Zelda<br />Breath of the Wild</h2>
+      <h2 className={styles.title}>The Legend of &nbsp;Zelda<br />Breath of the Wild</h2>
       <img src="/images/video/intro/zelda 001.jpg" alt="" />
     </section>
     <section className={styles.section2}>
