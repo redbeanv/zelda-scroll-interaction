@@ -23,9 +23,12 @@
 }
 
 .link {
-  margin-left: 0.8rem;
   font-size: 0.8rem;
   color: #000;
+}
+
+.link:not(:first-child) {
+  margin-left: 0.8rem;
 }
 
 .link:hover {
@@ -38,5 +41,33 @@
   }
   .link {
     font-size: 16px;
+  }
+}
+
+/* about */
+
+@media (min-width: 1200px) {
+  .header[data-type='about'] {
+    flex-direction: column;
+    justify-content: center;
+    position: static;
+    height: 100vh;
+    width: 33.3333%;
+    background: linear-gradient(0deg, rgba(0, 164, 220, 1) 0%, rgba(1, 87, 116, 1) 100%);
+  }
+
+  .header[data-type='about'] .logo {
+    font-size: 32px;
+    margin-bottom: 1em;
+    color: #fff;
+  }
+
+  .header[data-type='about'] .link {
+    color: #fff;
+    opacity: 0.7;
+  }
+
+  .header[data-type='about'] .link:hover {
+    opacity: 1;
   }
 }

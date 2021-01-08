@@ -1,0 +1,9 @@
+.about {
+  display: flex;
+  height: 100vh;
+}
+
+.list {
+  display: flex;
+  width: 66.6666%;
+}
