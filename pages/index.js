@@ -14,28 +14,39 @@ const Main = ({sceneInfoList}) => {
   const [sceneInfos, setSceneInfos] = useState();
   const [isSet, setIsSet] = useState(false);
 
-  // setCanvasImage
+  // TODO layout dataset 필요
+  let yOffset;
+  let currentScene = 0; // 현재 활성화된 scene
+
+  // init scene
   useEffect(() => {
-    if(!isSet) {
+    if (!isSet) {
+      const sections = document.getElementsByTagName('section');
+
       sceneInfoList.map((sceneInfo, i) => {
 
-        // set image element
+        // set scene type & objs
+        const section = sections[i];
+        sceneInfo.sceneType = section.dataset.sceneType;
+        sceneInfo.objs.container = section;
+        // TODO: canvas 추가
+
+        // set scene image element
         let imageElems = [];
         for (let i = 0; i < sceneInfo.imageLength; i++) {
           let imgElem = document.createElement('img');
           imgElem.src = `${VIDEO_PATH}/${sceneInfo.sceneName}/${sceneInfo.imagesNames[i]}`;
           imageElems.push(imgElem);
         }
-        sceneInfoList[i].objs.imageElems = imageElems;
+        sceneInfo.objs.imageElems = imageElems;
 
-        // set scrollHeight
-        // if (sceneInfo[i].type === 'sticky') {
-        sceneInfo.scrollHeight = HEIGHT_NUM * window.innerHeight;
-        // } else if (sceneInfo[i].type === 'normal') {
-        //   sceneInfo[i].scrollHeight = sceneInfo[i].objs.container.offsetHeight;
-        // }
-        // sceneInfo.objs.container.style.height = `${sceneInfo[i].scrollHeight}px`;
-
+        // set scene scrollHeight
+        if (sceneInfo.sceneType === 'sticky') {
+          sceneInfo.scrollHeight = HEIGHT_NUM * window.innerHeight;
+        } else if (sceneInfo.sceneType === 'normal') {
+          sceneInfo.scrollHeight = sceneInfo.objs.container.offsetHeight;
+        }
+        sceneInfo.objs.container.style.height = `${sceneInfo.scrollHeight}px`;
       });
 
       setSceneInfos(sceneInfoList);
@@ -43,47 +54,59 @@ const Main = ({sceneInfoList}) => {
     }
   }, [isSet]);
 
-  // setLayout
   useEffect(() => {
+  //   // sceneInfos[0].objs.context.drawImage(sceneInfo[0].objs.videoImages[0], 0, 0);
+  //
+  //   yOffset = window.pageYOffset;
+  //   let totalScrollHeight = 0;
+  //   totalScrollHeight += sceneInfo.scrollHeight;
+  //   if (currentScene === 0 && totalScrollHeight >= yOffset) {
+  //     currentScene = i;
+  //   }
+  //   // document.body.setAttribute('id', `show-scene-${currentScene}`);
+  //   //
+  //   // const heightRatio = window.innerHeight / 1080;
+  //   // sceneInfo[0].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
+  //   // sceneInfo[2].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
+  //
+  //   window.addEventListener('scroll', () => {
+  //     yOffset = window.pageYOffset;
+  //     console.log(yOffset)
+  //     // scrollLoop();
+  //     // checkMenu();
+  //
+  //     // if (!rafState) {
+  //     //   rafId = requestAnimationFrame(loop);
+  //     //   rafState = true;
+  //     // }
+  //   });
+  //
     console.log(sceneInfos)
-    // yOffset = window.pageYOffset;
-    // let totalScrollHeight = 0;
-    // for (let i = 0; i < sceneInfo.length; i++) {
-    //   totalScrollHeight += sceneInfo[i].scrollHeight;
-    //   if (totalScrollHeight >= yOffset) {
-    //     currentScene = i;
-    //     break;
-    //   }
-    // }
-    // document.body.setAttribute('id', `show-scene-${currentScene}`);
-    //
-    // const heightRatio = window.innerHeight / 1080;
-    // sceneInfo[0].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
-    // sceneInfo[2].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
   }, [sceneInfos]);
 
   return (
     <AppLayout>
-      <section className={styles.section1}>
-        <h2 className={styles.title}>The Legend of &nbsp;Zelda<br />Breath of the Wild</h2>
-        <img src="/images/video/001_intro/zelda 001.jpg" alt="" />
+      <section className={styles.section1} data-scene-type='sticky'>
+        <h2 className={styles.title}>The Legend of &nbsp;Zelda<br/>Breath of the Wild</h2>
+        <img src="/images/video/001_intro/zelda 001.jpg" alt=""/>
       </section>
-      <section className={styles.section2}>
+      <section className={styles.section2} data-scene-type='normal'>
         <p className={styles.desc}>
-          <strong className={styles.point}>Lorem</strong> ipsum dolor sit amet, <br />consectetur adipiscing elit. <br />Sed pellentesque eros magna, <br />ac ultrices nulla accumsan in.
+          <strong className={styles.point}>Lorem</strong> ipsum dolor sit amet, <br/>consectetur adipiscing elit. <br/>Sed
+          pellentesque eros magna, <br/>ac ultrices nulla accumsan in.
         </p>
-        <Gallery />
+        <Gallery/>
       </section>
-      <section className={styles.section3}>
+      <section className={styles.section3} data-scene-type='normal'>
         <h2 className={styles.title}>Calamity Ganon</h2>
-        <img src="/images/video/001_intro/zelda 001.jpg" alt="" />
+        <img src="/images/video/001_intro/zelda 001.jpg" alt=""/>
       </section>
-      <section className={styles.section3}>
+      <section className={styles.section3} data-scene-type='normal'>
         <h2 className={styles.title}>Color Change</h2>
       </section>
-      <section className={styles.section3}>
+      <section className={styles.section3} data-scene-type='normal'>
         <h2 className={styles.title}>Ending</h2>
-        <img src="/images/video/001_intro/zelda 001.jpg" alt="" />
+        <img src="/images/video/001_intro/zelda 001.jpg" alt=""/>
       </section>
     </AppLayout>
   )
@@ -99,6 +122,7 @@ export async function getStaticProps() {
 
     sceneInfoList.push({
       sceneName: v,
+      sceneType: '',
       imageLength: imageNames.length,
       imagesNames: imageNames,
       scrollHeight: 0,
@@ -113,6 +137,5 @@ export async function getStaticProps() {
     }
   }
 }
-
 
 export default Main;
