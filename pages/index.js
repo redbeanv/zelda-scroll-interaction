@@ -11,25 +11,33 @@ const VIDEO_PATH = '/images/video';
 const HEIGHT_NUM = 5;
 
 const Main = ({sceneInfoList}) => {
-  const [sceneInfos, setSceneInfos] = useState();
+  const [sceneInfos, setSceneInfos] = useState([]);
+  const [layoutData, setLayoutData] = useState({
+    yOffset: 0,           // window.pageYOffset
+    prevScrollHeight: 0,  // yOffset보다 이전에 위치한 섹션 높이 합
+    currentScene: 0,      // 현재 활성화된 scene
+    enterNewScene: false, // 새로운 scene이 시작되는 순간 true
+    acc: 0.1,
+    delayedYOffset: 0,
+    rafId: null,
+    rafState: null,
+  });
   const [isSet, setIsSet] = useState(false);
 
-  // TODO layout dataset 필요
-  let yOffset;
-  let currentScene = 0; // 현재 활성화된 scene
-
-  // init scene
+  // init
   useEffect(() => {
     if (!isSet) {
       const sections = document.getElementsByTagName('section');
 
       sceneInfoList.map((sceneInfo, i) => {
-
         // set scene type & objs
         const section = sections[i];
         sceneInfo.sceneType = section.dataset.sceneType;
         sceneInfo.objs.container = section;
-        // TODO: canvas 추가
+        sceneInfo.objs.canvas = document.getElementsByTagName('canvas')[i];
+        sceneInfo.objs.context = document.getElementsByTagName('canvas')[i] !== undefined
+          ? document.getElementsByTagName('canvas')[i].getContext('2d')
+          : null;
 
         // set scene image element
         let imageElems = [];
@@ -41,54 +49,74 @@ const Main = ({sceneInfoList}) => {
         sceneInfo.objs.imageElems = imageElems;
 
         // set scene scrollHeight
-        if (sceneInfo.sceneType === 'sticky') {
-          sceneInfo.scrollHeight = HEIGHT_NUM * window.innerHeight;
-        } else if (sceneInfo.sceneType === 'normal') {
-          sceneInfo.scrollHeight = sceneInfo.objs.container.offsetHeight;
+        switch (sceneInfo.sceneType) {
+          case "sticky":
+            sceneInfo.scrollHeight = HEIGHT_NUM * window.innerHeight;
+            break;
+          case "normal":
+            sceneInfo.scrollHeight = sceneInfo.objs.container.offsetHeight;
+            break;
+          default:
+            sceneInfo.scrollHeight = sceneInfo.objs.container.offsetHeight;
+            break;
         }
         sceneInfo.objs.container.style.height = `${sceneInfo.scrollHeight}px`;
       });
 
+      // set layout
+      let totalScrollHeight = 0;
+      let currentSceneIndex = 0;
+      for (let i = 0; i < sceneInfoList.length; i++) {
+        totalScrollHeight += sceneInfoList[i].scrollHeight;
+
+        totalScrollHeight >= layoutData.yOffset
+          ? currentSceneIndex = i
+          : null
+      }
+
+      document.body.setAttribute('id', `show-scene-${currentSceneIndex}`);
+
+      const heightRatio = window.innerHeight / 1080;
+      sceneInfoList[0].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
+      // sceneInfo[2].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
+
+      sceneInfoList[0].objs.context.drawImage(sceneInfoList[0].objs.imageElems[0], 0, 0);
+
+      // data setting
       setSceneInfos(sceneInfoList);
+      setLayoutData(prev => {
+        return {
+          ...prev,
+          yOffset: window.pageYOffset,
+          currentScene: currentSceneIndex
+        }
+      });
+
       setIsSet(true);
     }
   }, [isSet]);
 
   useEffect(() => {
-  //   // sceneInfos[0].objs.context.drawImage(sceneInfo[0].objs.videoImages[0], 0, 0);
-  //
-  //   yOffset = window.pageYOffset;
-  //   let totalScrollHeight = 0;
-  //   totalScrollHeight += sceneInfo.scrollHeight;
-  //   if (currentScene === 0 && totalScrollHeight >= yOffset) {
-  //     currentScene = i;
-  //   }
-  //   // document.body.setAttribute('id', `show-scene-${currentScene}`);
-  //   //
-  //   // const heightRatio = window.innerHeight / 1080;
-  //   // sceneInfo[0].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
-  //   // sceneInfo[2].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
-  //
-  //   window.addEventListener('scroll', () => {
-  //     yOffset = window.pageYOffset;
-  //     console.log(yOffset)
-  //     // scrollLoop();
-  //     // checkMenu();
-  //
-  //     // if (!rafState) {
-  //     //   rafId = requestAnimationFrame(loop);
-  //     //   rafState = true;
-  //     // }
-  //   });
-  //
-    console.log(sceneInfos)
+    window.addEventListener('scroll', () => {
+      setLayoutData(prev => {
+        return {
+          ...prev,
+          yOffset: window.pageYOffset
+        }
+      })
+    });
+    console.log(sceneInfos);
+    console.log(layoutData);
   }, [sceneInfos]);
 
   return (
     <AppLayout>
       <section className={styles.section1} data-scene-type='sticky'>
         <h2 className={styles.title}>The Legend of &nbsp;Zelda<br/>Breath of the Wild</h2>
-        <img src="/images/video/001_intro/zelda 001.jpg" alt=""/>
+        {/*<img src="/images/video/001_intro/zelda 001.jpg" alt=""/>*/}
+        <div className="sticky-elem sticky-elem-canvas">
+          <canvas id="vidio-canvas-0" width="1920" height="1080"></canvas>
+        </div>
       </section>
       <section className={styles.section2} data-scene-type='normal'>
         <p className={styles.desc}>
