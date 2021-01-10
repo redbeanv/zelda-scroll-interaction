@@ -34,6 +34,7 @@ div, span, article, section, header, footer, aside, p, ul, li, fieldset, legend,
 	box-sizing: border-box;
 }
 html {
+    overflow-x: hidden;
     font-family: 'Inknut Antiqua', 'Noto Sans KR', serif;
 }
 body {

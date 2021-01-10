@@ -1,4 +1,5 @@
-.section1, .section3 {
+.section1,
+.section3 {
   padding: 8em 1em;
   text-align: center;
 }
@@ -8,7 +9,7 @@
 }
 
 .title {
-  margin-bottom: 4em;
+  padding-bottom: 4em;
   line-height: 1.4;
   font-size: 1.4rem;
   color: #00a4dc;
@@ -18,9 +19,30 @@
   margin-bottom: 6em;
   line-height: 1.4;
   font-size: 0.85rem;
-  color: rgba(0, 164, 220, 0.4)
+  color: rgba(0, 164, 220, 0.4);
 }
 
 .point {
   color: #00a4dc;
+}
+
+/* canvas */
+.sticky {
+  overflow: hidden;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  margin: 0 -1em;
+}
+
+.sticky .canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+@media (min-width: 1200px) {
+  .sticky {
+    margin: 0;
+  }
 }
