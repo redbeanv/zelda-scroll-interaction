@@ -28,13 +28,21 @@
 
 /* canvas */
 .sticky {
+  overflow: hidden;
   position: sticky;
   top: 0;
   height: 100vh;
+  margin: 0 -1em;
 }
 
 .sticky .canvas {
   position: absolute;
   top: 50%;
   left: 50%;
+}
+
+@media (min-width: 1200px) {
+  .sticky {
+    margin: 0;
+  }
 }
