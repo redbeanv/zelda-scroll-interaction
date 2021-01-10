@@ -3,6 +3,7 @@
   align-items: center;
   justify-content: space-between;
   position: fixed;
+  z-index: 9999;
   top: 0;
   left: 0;
   width: 100%;
@@ -47,7 +48,7 @@
 /* profile */
 
 @media (min-width: 1200px) {
-  .header[data-type='about'] {
+  .header[data-type="about"] {
     flex-direction: column;
     justify-content: center;
     position: static;
@@ -57,18 +58,18 @@
     background: linear-gradient(0deg, rgba(0, 164, 220, 1) 0%, rgba(1, 87, 116, 1) 100%);
   }
 
-  .header[data-type='about'] .logo {
+  .header[data-type="about"] .logo {
     font-size: 32px;
     margin-bottom: 1em;
     color: #fff;
   }
 
-  .header[data-type='about'] .link {
+  .header[data-type="about"] .link {
     color: #fff;
     opacity: 0.7;
   }
 
-  .header[data-type='about'] .link:hover {
+  .header[data-type="about"] .link:hover {
     opacity: 1;
   }
 }

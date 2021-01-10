@@ -113,9 +113,8 @@ const Main = ({sceneInfoList}) => {
     <AppLayout>
       <section className={styles.section1} data-scene-type='sticky'>
         <h2 className={styles.title}>The Legend of &nbsp;Zelda<br/>Breath of the Wild</h2>
-        {/*<img src="/images/video/001_intro/zelda 001.jpg" alt=""/>*/}
-        <div className="sticky-elem sticky-elem-canvas">
-          <canvas id="vidio-canvas-0" width="1920" height="1080"></canvas>
+        <div className={styles.sticky}>
+          <canvas id="vidio-canvas-0" width="1920" height="1080" className={styles.canvas}></canvas>
         </div>
       </section>
       <section className={styles.section2} data-scene-type='normal'>
