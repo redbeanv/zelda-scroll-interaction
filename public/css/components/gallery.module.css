@@ -7,3 +7,49 @@
   display: flex;
   justify-content: center;
 }
+
+.item {
+  overflow: hidden;
+  margin: 1rem;
+}
+
+.item.first {
+  align-self: center;
+}
+
+.item.second {
+  align-self: flex-end;
+  margin: 0 1.5rem 3rem 2rem;
+}
+
+.item.third,
+.item.fourth,
+.item.fifth {
+  align-self: center;
+}
+
+.item.seventh {
+  margin: 2rem 1rem;
+}
+
+.item.eighth {
+  margin: 1rem 1rem 0 2rem;
+}
+
+.item.third,
+.item.fifth,
+.item.seventh {
+  display: none;
+}
+
+.item > img {
+  display: block;
+}
+
+@media (min-width: 1200px) {
+  .item.third,
+  .item.fifth,
+  .item.seventh {
+    display: block;
+  }
+}

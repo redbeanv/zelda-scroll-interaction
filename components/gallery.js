@@ -5,33 +5,33 @@ const Gallery = () => {
   return (
     <div className={styles.gallery}>
       <div className={styles.row}>
-        <div className={styles.item}>
-          <img src="https://placeimg.com/300/480/animals" alt="" className={styles.img} />
+        <div className={`${styles.item} ${styles.first}`}>
+          <img src="/images/gallery1.jpg" alt="" className={styles.img} />
         </div>
-        <div className={styles.item}>
-          <img src="https://placeimg.com/300/320/arch" alt="" className={styles.img} />
+        <div className={`${styles.item} ${styles.second}`}>
+          <img src="/images/gallery2.jpg" alt="" className={styles.img} />
         </div>
-        <div className={styles.item}>
-          <img src="https://placeimg.com/300/400/nature" alt="" className={styles.img} />
-        </div>
-      </div>
-      <div className={styles.row}>
-        <div className={styles.item}>
-          <img src="https://placeimg.com/400/250/people" alt="" className={styles.img} />
-        </div>
-        <div className={styles.item}>
-          <img src="https://placeimg.com/300/280/tech" alt="" className={styles.img} />
+        <div className={`${styles.item} ${styles.third}`}>
+          <img src="/images/gallery3.jpg" alt="" className={styles.img} />
         </div>
       </div>
       <div className={styles.row}>
-        <div className={styles.item}>
-          <img src="https://placeimg.com/400/320/animals" alt="" className={styles.img} />
+        <div className={`${styles.item} ${styles.fourth}`}>
+          <img src="/images/gallery4.jpg" alt="" className={styles.img} />
         </div>
-        <div className={styles.item}>
-          <img src="https://placeimg.com/240/350/any" alt="" className={styles.img} />
+        <div className={`${styles.item} ${styles.fifth}`}>
+          <img src="/images/gallery5.jpg" alt="" className={styles.img} />
         </div>
-        <div className={styles.item}>
-          <img src="https://placeimg.com/280/400/nature" alt="" className={styles.img} />
+      </div>
+      <div className={styles.row}>
+        <div className={`${styles.item} ${styles.sixth}`}>
+          <img src="/images/gallery6.jpg" alt="" className={styles.img} />
+        </div>
+        <div className={`${styles.item} ${styles.seventh}`}>
+          <img src="/images/gallery7.jpg" alt="" className={styles.img} />
+        </div>
+        <div className={`${styles.item} ${styles.eighth}`}>
+          <img src="/images/gallery8.jpg" alt="" className={styles.img} />
         </div>
       </div>
     </div>
