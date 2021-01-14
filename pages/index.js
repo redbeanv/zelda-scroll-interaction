@@ -97,57 +97,48 @@ const Main = ({sceneInfoList}) => {
         }
       });
 
-      console.log(window.pageYOffset)
       setIsSet(true);
     }
   }, [isSet]);
 
   useEffect(() => {
     const scrollLoop = () => {
+      const layout = {...layoutData};
+      const yOffset = window.pageYOffset;
+
+      layout.enterNewScene = false;
+      layout.prevScrollHeight = 0;
+      for (let i = 0; i < layoutData.currentScene; i++) {
+        layout.prevScrollHeight += sceneInfos[i].scrollHeight;
+      }
+
+      // 정확한 계산을 위해 기존 yOffset 대신 delayedYOffset 으로 교체
+      if (yOffset > layout.prevScrollHeight + sceneInfos[layout.currentScene].scrollHeight) {
+        layout.enterNewScene = true;
+        layout.currentScene++;
+        // body의 id값에 따라 css에서 sticky-elem의 show / hide 설정
+        document.body.setAttribute('id', `show-scene-${layout.currentScene}`);
+      } else if (yOffset < layout.prevScrollHeight) {
+        layout.enterNewScene = true;
+        if (layout.currentScene === 0) return;   // 브라우저 바운스 효과로 currentScene가 - 값이 되는 것을 방지
+        layout.currentScene--;
+        document.body.setAttribute('id', `show-scene-${layout.currentScene}`);
+      }
+
       setLayoutData(prev => {
         return {
           ...prev,
-          yOffset: window.yOffset,
+          yOffset,
+          prevScrollHeight: layout.prevScrollHeight,
+          currentScene: layout.currentScene,
+          enterNewScene: layout.enterNewScene,
         }
       });
-      // let layout = {...layoutData};
-      //
-      // let enterNewScene = false;
-      // let prevScrollHeight = 0;
-      // for (let i = 0; i < layout.currentScene; i++) {
-      //   prevScrollHeight += sceneInfos[i].scrollHeight;
-      // }
-      // console.log(prevScrollHeight)
-      //
-      // // 정확한 계산을 위해 기존 yOffset 대신 delayedYOffset 으로 교체
-      // console.log("layout.currentScene", layout.currentScene)
-      // if (layout.delayedYOffset > prevScrollHeight + sceneInfos[layout.currentScene].scrollHeight) {
-      //   layout.enterNewScene = true;
-      //   layout.currentScene++;
-      //   // body의 id값에 따라 css에서 sticky-elem의 show / hide 설정
-      //   document.body.setAttribute('id', `show-scene-${currentScene}`);
-      // } else if (layoutData.delayedYOffset < prevScrollHeight) {
-      //   layout.enterNewScene = true;
-      //   if (layout.currentScene === 0) return;   // 브라우저 바운스 효과로 currentScene가 - 값이 되는 것을 방지
-      //   layout.currentScene--;
-      //   document.body.setAttribute('id', `show-scene-${currentScene}`);
-      // }
-      //
-      // // scene이 변경되는 순간은 palyAni 함수 실행 X (변경되는 순간 출력되는 음수값 때문에)
-      // if (enterNewScene) return;
-      //
-      // console.log("layoutData.currentScene =>", layout.currentScene)
-      // setLayoutData(prev => {
-      //   return {
-      //     ...prev,
-      //     yOffset: layout.yOffset,
-      //     prevScrollHeight: layout.prevScrollHeight,
-      //     currentScene: layout.currentScene,
-      //     enterNewScene: layout.enterNewScene,
-      //   }
-      // });
 
-      // playAni();
+      // scene이 변경되는 순간은 palyAni 함수 실행 X (변경되는 순간 출력되는 음수값 때문에)
+      if (!layout.enterNewScene) {
+        // playAni();
+      }
     };
 
     window.addEventListener('scroll', scrollLoop, {passive: true});
