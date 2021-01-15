@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import AppLayout from '../components/appLayout';
 import Gallery from '../components/gallery';
 import StickySection from "../components/main/stickySection";
@@ -21,86 +21,85 @@ const Main = ({sceneInfoList}) => {
     acc: 0.1,             // 0.1 만큼 애니메이션 감속
     delayedYOffset: 0,    // 지연된 yOffset
     rafId: null,          // requestAnimationFrame 적용
-    rafState: null,       // requestAnimationFrame 상태
+    rafState: false,      // requestAnimationFrame 상태
   });
-  const [isSet, setIsSet] = useState(false);
 
   // init
   useEffect(() => {
-    if (!isSet) {
-      const sections = document.getElementsByTagName('section');
+    const sections = document.getElementsByTagName('section');
 
-      /** set data */
-      sceneInfoList.map((sceneInfo, i) => {
-        // set scene type & objs
-        const section = sections[i];
-        sceneInfo.sceneType = section.dataset.sceneType;
-        sceneInfo.objs.container = section;
-        sceneInfo.objs.canvas = document.getElementsByTagName('canvas')[i];
-        sceneInfo.objs.context = document.getElementsByTagName('canvas')[i] !== undefined
-          ? document.getElementsByTagName('canvas')[i].getContext('2d')
-          : null;
+    /** set data */
+    sceneInfoList.map((sceneInfo, i) => {
+      // set scene type & objs
+      const section = sections[i];
+      sceneInfo.sceneType = section.dataset.sceneType;
+      sceneInfo.objs.container = section;
+      sceneInfo.objs.canvas = document.getElementsByTagName('canvas')[i];
+      sceneInfo.objs.context = document.getElementsByTagName('canvas')[i] !== undefined
+        ? document.getElementsByTagName('canvas')[i].getContext('2d')
+        : null;
 
-        // set scene image element
-        let imageElems = [];
-        for (let i = 0; i < sceneInfo.imageLength; i++) {
-          let imgElem = document.createElement('img');
-          imgElem.src = `${VIDEO_PATH}/${sceneInfo.sceneName}/${sceneInfo.imagesNames[i]}`;
-          imageElems.push(imgElem);
-        }
-        sceneInfo.objs.imageElems = imageElems;
+      // set scene values
+      sceneInfo.values.imageSequence = [0, sceneInfo.imageLength - 1, {start: 0, end: 0.8}]
 
-        // 각 섹션의 높이 설정
-        switch (sceneInfo.sceneType) {
-          case "sticky":
-            sceneInfo.scrollHeight = HEIGHT_NUM * window.innerHeight;
-            break;
-          case "normal":
-            sceneInfo.scrollHeight = sceneInfo.objs.container.offsetHeight;
-            break;
-          default:
-            sceneInfo.scrollHeight = sceneInfo.objs.container.offsetHeight;
-            break;
-        }
-        sceneInfo.objs.container.style.height = `${sceneInfo.scrollHeight}px`;
-      });
-
-      /** set layout */
-        // 페이지 중간에서 새로고침 했을 경우의 currentScene 설정
-      let totalScrollHeight = 0;
-      let currentSceneIndex = 0;
-      for (let i = 0; i < sceneInfoList.length; i++) {
-        totalScrollHeight += sceneInfoList[i].scrollHeight;
-
-        if (totalScrollHeight >= window.pageYOffset) {
-          currentSceneIndex = i;
-          break;
-        }
+      // set scene image element
+      let imageElems = [];
+      for (let i = 0; i < sceneInfo.imageLength; i++) {
+        let imgElem = document.createElement('img');
+        imgElem.src = `${VIDEO_PATH}/${sceneInfo.sceneName}/${sceneInfo.imagesNames[i]}`;
+        imageElems.push(imgElem);
       }
+      sceneInfo.objs.imageElems = imageElems;
 
-      document.body.setAttribute('id', `show-scene-${currentSceneIndex}`);
+      // 각 섹션의 높이 설정
+      switch (sceneInfo.sceneType) {
+        case "sticky":
+          sceneInfo.scrollHeight = HEIGHT_NUM * window.innerHeight;
+          break;
+        case "normal":
+          sceneInfo.scrollHeight = sceneInfo.objs.container.offsetHeight;
+          break;
+        default:
+          sceneInfo.scrollHeight = sceneInfo.objs.container.offsetHeight;
+          break;
+      }
+      sceneInfo.objs.container.style.height = `${sceneInfo.scrollHeight}px`;
+    });
 
-      // canvas 비율 설정 (height 100%, center 정렬)
-      const heightRatio = window.innerHeight / 1080;
-      sceneInfoList[0].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
-      // sceneInfo[2].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
+    /** set layout */
+      // 페이지 중간에서 새로고침 했을 경우의 currentScene 설정
+    let totalScrollHeight = 0;
+    let currentSceneIndex = 0;
+    for (let i = 0; i < sceneInfoList.length; i++) {
+      totalScrollHeight += sceneInfoList[i].scrollHeight;
 
-      sceneInfoList[0].objs.context.drawImage(sceneInfoList[0].objs.imageElems[0], 0, 0);
-
-      // data setting
-      setSceneInfos(sceneInfoList);
-      setLayoutData(prev => {
-        return {
-          ...prev,
-          yOffset: window.pageYOffset,
-          currentScene: currentSceneIndex
-        }
-      });
-
-      setIsSet(true);
+      if (totalScrollHeight >= window.pageYOffset) {
+        currentSceneIndex = i;
+        break;
+      }
     }
-  }, [isSet]);
 
+    document.body.setAttribute('id', `show-scene-${currentSceneIndex}`);
+
+    // canvas 비율 설정 (height 100%, center 정렬)
+    const heightRatio = window.innerHeight / 1080;
+    sceneInfoList[0].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
+    // sceneInfo[2].objs.canvas.style.transform = `translate3d(-50%, -50%, 0) scale(${heightRatio})`;
+
+    sceneInfoList[0].objs.context.drawImage(sceneInfoList[0].objs.imageElems[0], 0, 0);
+
+    // data setting
+    setSceneInfos(sceneInfoList);
+    setLayoutData(prev => {
+      return {
+        ...prev,
+        yOffset: window.pageYOffset,
+        currentScene: currentSceneIndex
+      }
+    });
+  }, []);
+
+  // scroll event
   useEffect(() => {
     const scrollLoop = () => {
       const layout = {...layoutData};
@@ -139,15 +138,119 @@ const Main = ({sceneInfoList}) => {
       if (!layout.enterNewScene) {
         // playAni();
       }
+
+    //   if (!layout.rafState) {
+    //     setLayoutData(prev => {
+    //       return {
+    //         ...prev,
+    //         rafId: requestAnimationFrame(loop),
+    //         rafState: true
+    //       }
+    //     })
+    //   }
     };
 
-    window.addEventListener('scroll', scrollLoop, {passive: true});
-    return () => window.removeEventListener('scroll', scrollLoop);
+    if (sceneInfos.length !== 0) {
+      window.addEventListener('scroll', scrollLoop, {passive: true});
+      return () => window.removeEventListener('scroll', scrollLoop);
+    }
   }, [sceneInfos, layoutData]);
 
-  useEffect(() => {
-    console.log(layoutData)
+  // const loop = useCallback(() => {
+  //   console.log(layoutData)
+  //   layoutData.delayedYOffset = layoutData.delayedYOffset + (layoutData.yOffset - layoutData.delayedYOffset) * layoutData.acc;
+  //
+  //   // scene이 변경되지 않는 동안에만 적용
+  //   if (!layoutData.enterNewScene) {
+  //     // scene 0 에서만 적용
+  //     if (layoutData.currentScene === 0) {
+  //       // 기존 yOffset 대신 감속효과 적용된 delayedYOffset 으로 교체
+  //       const currentYOffset = layoutData.delayedYOffset - layoutData.prevScrollHeight;
+  //       const objs = sceneInfos[layoutData.currentScene].objs;
+  //       const values = sceneInfos[layoutData.currentScene].values;
+  //       let sequence = Math.round(calcVal(values.imageSequence, currentYOffset));
+  //       if (objs.videoImages[sequence]) {
+  //         objs.context.drawImage(objs.videoImages[sequence], 0, 0);
+  //       }
+  //     }
+  //   }
+  //   //
+  //   setLayoutData(prev => {
+  //     return {
+  //       ...prev,
+  //       rafId: requestAnimationFrame(loop)
+  //     }
+  //   });
+  //   // // if (Math.abs(yOffset - delayedYOffset) < 1) {
+  //   // if (0 < 1) {
+  //   //   console.log("@@")
+  //   //   cancelAnimationFrame(layoutData.rafId);
+  //   //   setLayoutData(prev => {
+  //   //     return {
+  //   //       ...prev,
+  //   //       rafState: false
+  //   //     }
+  //   //   });
+  //   // }
+  // }, [layoutData]);
 
+  // function calcVal(val, currentYOffset) {
+  //   let rv;
+  //   const scrollHeight = sceneInfo[currentScene].scrollHeight;
+  //   const scrollRatio = currentYOffset / scrollHeight; // %값 (현재 scene의 스크롤 위치 / 현재 scene의 높이)
+  //
+  //   if (val.length >= 3) {
+  //     const partScrollStart = val[2].start * scrollHeight; // 시작값 px
+  //     const partScrollEnd = val[2].end * scrollHeight; // 종료값 px
+  //     const partScrollHeight = partScrollEnd - partScrollStart; // 애니메이션 구간
+  //
+  //     if (currentYOffset >= partScrollStart && currentYOffset <= partScrollEnd) {
+  //       rv = (currentYOffset - partScrollStart) / partScrollHeight * (val[1] - val[0]) + val[0];
+  //     } else if (currentYOffset < partScrollStart) {
+  //       rv = val[0];
+  //     } else if (currentYOffset > partScrollEnd) {
+  //       rv = val[1];
+  //     }
+  //   } else {
+  //     rv = scrollRatio * (val[1] - val[0]) + val[0];
+  //   }
+  //
+  //   return rv;
+  // }
+
+  // const playAni = useCallback(() => {
+  //
+  //   console.log('playAni')
+  //   const objs = sceneInfos[layoutData.currentScene].objs;
+  //   const values = sceneInfos[layoutData.currentScene].values;
+  //   const currentYOffset = layoutData.yOffset - layoutData.prevScrollHeight;
+  //   const scrollHeight = sceneInfos[layoutData.currentScene].scrollHeight;
+  //   const scrollRatio = currentYOffset / scrollHeight;
+  //
+  //   switch (layoutData.currentScene) {
+  //     case 0:
+  //       // 부드러운 애니메이션 적용을 위해 loop 함수 안으로 이동
+  //       // let sequence = Math.round(calcVal(values.imageSequence, currentYOffset));
+  //       // objs.context.drawImage(objs.videoImages[sequence], 0, 0);
+  //       break;
+  //     case 1:
+  //       break;
+  //     case 2:
+  //       // out
+  //       objs.imgLInk.style.opacity = calcVal(values.link_opacity_out, currentYOffset);
+  //       objs.nameLink.style.transform = `translate3d(0, ${calcVal(values.link_translateY_out, currentYOffset)}%, 0)`;
+  //
+  //       // in
+  //       objs.imgZelda.style.opacity = calcVal(values.zelda_opacity_in, currentYOffset);
+  //       objs.nameZelda.style.transform = `translate3d(0, ${calcVal(values.zelda_translateY_in, currentYOffset)}%, 0)`;
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // }, [sceneInfos, layoutData]);
+
+  useEffect(() => {
+    // console.log(sceneInfos)
   });
 
   return (
