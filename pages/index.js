@@ -109,37 +109,29 @@ const Main = ({sceneInfoList}) => {
   }, [sceneInfos, layoutData]);
 
   const scrollLoop = () => {
+    console.log('scroll Loop')
     const layout = {...layoutData};
-    const yOffset = window.pageYOffset;
 
+    layout.yOffset = window.pageYOffset;
     layout.enterNewScene = false;
     layout.prevScrollHeight = 0;
+
     for (let i = 0; i < layoutData.currentScene; i++) {
       layout.prevScrollHeight += sceneInfos[i].scrollHeight;
     }
 
     // 정확한 계산을 위해 기존 yOffset 대신 delayedYOffset 으로 교체
-    if (yOffset > layout.prevScrollHeight + sceneInfos[layout.currentScene].scrollHeight) {
+    if (layout.delayedYOffset > layout.prevScrollHeight + sceneInfos[layout.currentScene].scrollHeight) {
       layout.enterNewScene = true;
       layout.currentScene++;
       // body의 id값에 따라 css에서 sticky-elem의 show / hide 설정
       document.body.setAttribute('id', `show-scene-${layout.currentScene}`);
-    } else if (yOffset < layout.prevScrollHeight) {
+    } else if (layout.delayedYOffset < layout.prevScrollHeight) {
       layout.enterNewScene = true;
       if (layout.currentScene === 0) return;   // 브라우저 바운스 효과로 currentScene가 - 값이 되는 것을 방지
       layout.currentScene--;
       document.body.setAttribute('id', `show-scene-${layout.currentScene}`);
     }
-
-    setLayoutData(prev => {
-      return {
-        ...prev,
-        yOffset,
-        prevScrollHeight: layout.prevScrollHeight,
-        currentScene: layout.currentScene,
-        enterNewScene: layout.enterNewScene,
-      }
-    });
 
     // // scene이 변경되는 순간은 palyAni 함수 실행 X (변경되는 순간 출력되는 음수값 때문에)
     // if (!layout.enterNewScene) {
@@ -147,19 +139,15 @@ const Main = ({sceneInfoList}) => {
     // }
 
     if (!layout.rafState) {
-      setLayoutData(prev => {
-        return {
-          ...prev,
-          rafId: requestAnimationFrame(loop),
-          rafState: true
-        }
-      })
+      layout.rafId = requestAnimationFrame(loop(layout));
+      layout.rafState = true;
     }
+
+    setLayoutData(layout);
   };
 
-  const loop = () => {
-    console.log('loop')
-    const layout = {...layoutData};
+  const loop = (prevLayout) => () => {
+    const layout = {...prevLayout};
     const tempSceneInfos = [...sceneInfos];
     layout.delayedYOffset = layout.delayedYOffset + (layout.yOffset - layout.delayedYOffset) * layout.acc;
 
@@ -173,29 +161,22 @@ const Main = ({sceneInfoList}) => {
         const imageSequence = sceneInfos[layout.currentScene].values.imageSequence;
         let sequence = Math.round(calcVal(imageSequence, currentYOffset));
         if (objs.imageElems[sequence]) {
-          tempSceneInfos[layout.currentScene].objs.context.drawImage(objs.imageElems[sequence], 0, 0)
+          tempSceneInfos[layout.currentScene].objs.context.drawImage(objs.imageElems[sequence], 0, 0);
           setSceneInfos(tempSceneInfos)
         }
       }
     }
 
-    setLayoutData(prev => {
-      return {
-        ...prev,
-        delayedYOffset: layout.delayedYOffset,
-        rafId: requestAnimationFrame(loop)
-      }
-    });
-    console.log(layout.rafId)
+    layout.rafId = requestAnimationFrame(loop(layout));
+
     if (Math.abs(layout.yOffset - layout.delayedYOffset) < 1) {
       console.log("@@")
-      cancelAnimationFrame(layoutData.rafId);
-      setLayoutData(prev => {
-        return {
-          ...prev,
-          rafState: false
-        }
-      });
+      cancelAnimationFrame(layout.rafId);
+      layout.rafState = false;
+      setLayoutData(layout);
+    } else {
+      console.log("!!!!")
+      setLayoutData(layout);
     }
   };
 
