@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, useRef} from 'react';
 import AppLayout from '../components/appLayout';
 import Gallery from '../components/gallery';
 import StickySection from "../components/main/stickySection";
@@ -101,126 +101,131 @@ const Main = ({sceneInfoList}) => {
 
   // scroll event
   useEffect(() => {
-    const scrollLoop = () => {
-      const layout = {...layoutData};
-      const yOffset = window.pageYOffset;
-
-      layout.enterNewScene = false;
-      layout.prevScrollHeight = 0;
-      for (let i = 0; i < layoutData.currentScene; i++) {
-        layout.prevScrollHeight += sceneInfos[i].scrollHeight;
-      }
-
-      // 정확한 계산을 위해 기존 yOffset 대신 delayedYOffset 으로 교체
-      if (yOffset > layout.prevScrollHeight + sceneInfos[layout.currentScene].scrollHeight) {
-        layout.enterNewScene = true;
-        layout.currentScene++;
-        // body의 id값에 따라 css에서 sticky-elem의 show / hide 설정
-        document.body.setAttribute('id', `show-scene-${layout.currentScene}`);
-      } else if (yOffset < layout.prevScrollHeight) {
-        layout.enterNewScene = true;
-        if (layout.currentScene === 0) return;   // 브라우저 바운스 효과로 currentScene가 - 값이 되는 것을 방지
-        layout.currentScene--;
-        document.body.setAttribute('id', `show-scene-${layout.currentScene}`);
-      }
-
-      setLayoutData(prev => {
-        return {
-          ...prev,
-          yOffset,
-          prevScrollHeight: layout.prevScrollHeight,
-          currentScene: layout.currentScene,
-          enterNewScene: layout.enterNewScene,
-        }
-      });
-
-      // scene이 변경되는 순간은 palyAni 함수 실행 X (변경되는 순간 출력되는 음수값 때문에)
-      if (!layout.enterNewScene) {
-        // playAni();
-      }
-
-    //   if (!layout.rafState) {
-    //     setLayoutData(prev => {
-    //       return {
-    //         ...prev,
-    //         rafId: requestAnimationFrame(loop),
-    //         rafState: true
-    //       }
-    //     })
-    //   }
-    };
-
+    // TODO: Intersection Observer 확인 더 해보고 적용
     if (sceneInfos.length !== 0) {
       window.addEventListener('scroll', scrollLoop, {passive: true});
       return () => window.removeEventListener('scroll', scrollLoop);
     }
   }, [sceneInfos, layoutData]);
 
-  // const loop = useCallback(() => {
-  //   console.log(layoutData)
-  //   layoutData.delayedYOffset = layoutData.delayedYOffset + (layoutData.yOffset - layoutData.delayedYOffset) * layoutData.acc;
-  //
-  //   // scene이 변경되지 않는 동안에만 적용
-  //   if (!layoutData.enterNewScene) {
-  //     // scene 0 에서만 적용
-  //     if (layoutData.currentScene === 0) {
-  //       // 기존 yOffset 대신 감속효과 적용된 delayedYOffset 으로 교체
-  //       const currentYOffset = layoutData.delayedYOffset - layoutData.prevScrollHeight;
-  //       const objs = sceneInfos[layoutData.currentScene].objs;
-  //       const values = sceneInfos[layoutData.currentScene].values;
-  //       let sequence = Math.round(calcVal(values.imageSequence, currentYOffset));
-  //       if (objs.videoImages[sequence]) {
-  //         objs.context.drawImage(objs.videoImages[sequence], 0, 0);
-  //       }
-  //     }
-  //   }
-  //   //
-  //   setLayoutData(prev => {
-  //     return {
-  //       ...prev,
-  //       rafId: requestAnimationFrame(loop)
-  //     }
-  //   });
-  //   // // if (Math.abs(yOffset - delayedYOffset) < 1) {
-  //   // if (0 < 1) {
-  //   //   console.log("@@")
-  //   //   cancelAnimationFrame(layoutData.rafId);
-  //   //   setLayoutData(prev => {
-  //   //     return {
-  //   //       ...prev,
-  //   //       rafState: false
-  //   //     }
-  //   //   });
-  //   // }
-  // }, [layoutData]);
+  const scrollLoop = () => {
+    const layout = {...layoutData};
+    const yOffset = window.pageYOffset;
 
-  // function calcVal(val, currentYOffset) {
-  //   let rv;
-  //   const scrollHeight = sceneInfo[currentScene].scrollHeight;
-  //   const scrollRatio = currentYOffset / scrollHeight; // %값 (현재 scene의 스크롤 위치 / 현재 scene의 높이)
-  //
-  //   if (val.length >= 3) {
-  //     const partScrollStart = val[2].start * scrollHeight; // 시작값 px
-  //     const partScrollEnd = val[2].end * scrollHeight; // 종료값 px
-  //     const partScrollHeight = partScrollEnd - partScrollStart; // 애니메이션 구간
-  //
-  //     if (currentYOffset >= partScrollStart && currentYOffset <= partScrollEnd) {
-  //       rv = (currentYOffset - partScrollStart) / partScrollHeight * (val[1] - val[0]) + val[0];
-  //     } else if (currentYOffset < partScrollStart) {
-  //       rv = val[0];
-  //     } else if (currentYOffset > partScrollEnd) {
-  //       rv = val[1];
-  //     }
-  //   } else {
-  //     rv = scrollRatio * (val[1] - val[0]) + val[0];
-  //   }
-  //
-  //   return rv;
-  // }
+    layout.enterNewScene = false;
+    layout.prevScrollHeight = 0;
+    for (let i = 0; i < layoutData.currentScene; i++) {
+      layout.prevScrollHeight += sceneInfos[i].scrollHeight;
+    }
 
-  // const playAni = useCallback(() => {
-  //
-  //   console.log('playAni')
+    // 정확한 계산을 위해 기존 yOffset 대신 delayedYOffset 으로 교체
+    if (yOffset > layout.prevScrollHeight + sceneInfos[layout.currentScene].scrollHeight) {
+      layout.enterNewScene = true;
+      layout.currentScene++;
+      // body의 id값에 따라 css에서 sticky-elem의 show / hide 설정
+      document.body.setAttribute('id', `show-scene-${layout.currentScene}`);
+    } else if (yOffset < layout.prevScrollHeight) {
+      layout.enterNewScene = true;
+      if (layout.currentScene === 0) return;   // 브라우저 바운스 효과로 currentScene가 - 값이 되는 것을 방지
+      layout.currentScene--;
+      document.body.setAttribute('id', `show-scene-${layout.currentScene}`);
+    }
+
+    setLayoutData(prev => {
+      return {
+        ...prev,
+        yOffset,
+        prevScrollHeight: layout.prevScrollHeight,
+        currentScene: layout.currentScene,
+        enterNewScene: layout.enterNewScene,
+      }
+    });
+
+    // // scene이 변경되는 순간은 palyAni 함수 실행 X (변경되는 순간 출력되는 음수값 때문에)
+    // if (!layout.enterNewScene) {
+    //   playAni();
+    // }
+
+    if (!layout.rafState) {
+      setLayoutData(prev => {
+        return {
+          ...prev,
+          rafId: requestAnimationFrame(loop),
+          rafState: true
+        }
+      })
+    }
+  };
+
+  const loop = () => {
+    console.log('loop')
+    const layout = {...layoutData};
+    const tempSceneInfos = [...sceneInfos];
+    layout.delayedYOffset = layout.delayedYOffset + (layout.yOffset - layout.delayedYOffset) * layout.acc;
+
+    // scene이 변경되지 않는 동안에만 적용
+    if (!layout.enterNewScene) {
+      // scene 0 에서만 적용
+      if (layout.currentScene === 0) {
+        // 기존 yOffset 대신 감속효과 적용된 delayedYOffset 으로 교체
+        const currentYOffset = layout.delayedYOffset - layout.prevScrollHeight;
+        const objs = sceneInfos[layout.currentScene].objs;
+        const imageSequence = sceneInfos[layout.currentScene].values.imageSequence;
+        let sequence = Math.round(calcVal(imageSequence, currentYOffset));
+        if (objs.imageElems[sequence]) {
+          tempSceneInfos[layout.currentScene].objs.context.drawImage(objs.imageElems[sequence], 0, 0)
+          setSceneInfos(tempSceneInfos)
+        }
+      }
+    }
+
+    setLayoutData(prev => {
+      return {
+        ...prev,
+        delayedYOffset: layout.delayedYOffset,
+        rafId: requestAnimationFrame(loop)
+      }
+    });
+    console.log(layout.rafId)
+    if (Math.abs(layout.yOffset - layout.delayedYOffset) < 1) {
+      console.log("@@")
+      cancelAnimationFrame(layoutData.rafId);
+      setLayoutData(prev => {
+        return {
+          ...prev,
+          rafState: false
+        }
+      });
+    }
+  };
+
+  // val : 애니메이션 효과의 시작, 끝, 애니메이션 구간의 배열 / currentYOffset : 현재 scene의 스크롤 위치
+  function calcVal(val, currentYOffset) {
+    let rv;
+    const scrollHeight = sceneInfos[layoutData.currentScene].scrollHeight;
+    const scrollRatio = currentYOffset / scrollHeight; // %값 (현재 scene의 스크롤 위치 / 현재 scene의 높이)
+
+    if (val.length >= 3) {
+      const partScrollStart = val[2].start * scrollHeight; // 시작값 px
+      const partScrollEnd = val[2].end * scrollHeight; // 종료값 px
+      const partScrollHeight = partScrollEnd - partScrollStart; // 애니메이션 구간
+
+      if (currentYOffset >= partScrollStart && currentYOffset <= partScrollEnd) {
+        rv = (currentYOffset - partScrollStart) / partScrollHeight * (val[1] - val[0]) + val[0];
+      } else if (currentYOffset < partScrollStart) {
+        rv = val[0];
+      } else if (currentYOffset > partScrollEnd) {
+        rv = val[1];
+      }
+    } else {
+      rv = scrollRatio * (val[1] - val[0]) + val[0];
+    }
+
+    return rv;
+  }
+
+  // function playAni (){
+  //   console.log('playAni');
   //   const objs = sceneInfos[layoutData.currentScene].objs;
   //   const values = sceneInfos[layoutData.currentScene].values;
   //   const currentYOffset = layoutData.yOffset - layoutData.prevScrollHeight;
@@ -236,18 +241,18 @@ const Main = ({sceneInfoList}) => {
   //     case 1:
   //       break;
   //     case 2:
-  //       // out
-  //       objs.imgLInk.style.opacity = calcVal(values.link_opacity_out, currentYOffset);
-  //       objs.nameLink.style.transform = `translate3d(0, ${calcVal(values.link_translateY_out, currentYOffset)}%, 0)`;
-  //
-  //       // in
-  //       objs.imgZelda.style.opacity = calcVal(values.zelda_opacity_in, currentYOffset);
-  //       objs.nameZelda.style.transform = `translate3d(0, ${calcVal(values.zelda_translateY_in, currentYOffset)}%, 0)`;
+  //       // // out
+  //       // objs.imgLInk.style.opacity = calcVal(values.link_opacity_out, currentYOffset);
+  //       // objs.nameLink.style.transform = `translate3d(0, ${calcVal(values.link_translateY_out, currentYOffset)}%, 0)`;
+  //       //
+  //       // // in
+  //       // objs.imgZelda.style.opacity = calcVal(values.zelda_opacity_in, currentYOffset);
+  //       // objs.nameZelda.style.transform = `translate3d(0, ${calcVal(values.zelda_translateY_in, currentYOffset)}%, 0)`;
   //       break;
   //     default:
   //       break;
   //   }
-  // }, [sceneInfos, layoutData]);
+  // };
 
   useEffect(() => {
     // console.log(sceneInfos)
